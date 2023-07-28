@@ -195,7 +195,7 @@ do
 	   fi
 
 	   echo "Identifying reads in ${x}.bam with adapter contamination on $(date)."
-	   blastn -db $DBpath/pacbio_vectors_db -query ${outdir}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue 700 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
+	   blastn -db $DBpath/pacbio_vectors_db -query ${read_path_str}/${x}.fasta -num_threads ${threads} -task blastn -reward 1 -penalty -5 -gapopen 3 -gapextend 3 -dust no -soft_masking true -evalue 700 -searchsp 1750000000000 -outfmt 6 > ${outdir}/${x}.contaminant.blastout &
 	   wait
 	   echo "Creating blocklist for ${x}.bam on $(date)."
 	   cat ${outdir}/${x}.contaminant.blastout | grep 'NGB0097' | awk -v OFS='\t' -v var1="${adapterlength}" -v var2="${pctmatch}" '{if (($2 ~ /NGB00972/ && $3 >= var2 && $4 >= var1) || ($2 ~ /NGB00973/ && $3 >= 97 && $4 >= 34)) print $1}' | sort -u > ${outdir}/${x}.blocklist &
